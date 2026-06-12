@@ -15,13 +15,13 @@ let package = Package(
         .iOS("16.0"),
     ],
     products: [
-        .library(name: "MapARFeature", targets: ["MapARFeature"]),
+        .library(name: "MapARFeature", targets: ["FeatureModule"]),
     ],
     dependencies: [],
     targets: [
         .target(
-            name: "MapARFeature",
-            path: "Modules/MapARFeature/Sources",
+            name: "FeatureModule",
+            path: "Modules/Feature/Sources",
             swiftSettings: [
                 // Strict concurrency from day one; matches the
                 // ios-swift role anti-pattern guard rails.
@@ -30,9 +30,9 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "MapARFeatureTests",
-            dependencies: ["MapARFeature"],
-            path: "Modules/MapARFeature/Tests"
+            name: "FeatureModuleTests",
+            dependencies: ["FeatureModule"],
+            path: "Modules/Feature/Tests"
         ),
     ]
 )
