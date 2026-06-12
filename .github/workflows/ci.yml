@@ -72,14 +72,15 @@ jobs:
       - name: pick + boot simulator
         run: |
           set -euo pipefail
-          DEVICE=$(xcrun simctl list devices available | grep -oE 'iPhone [^(]+' | head -1 | xargs)
-          echo "picked simulator: $DEVICE"
-          echo "IOS_SIM_DEVICE=$DEVICE" >> "$GITHUB_ENV"
-          xcrun simctl boot "$DEVICE" || true
-          xcrun simctl bootstatus booted -b
+          UDID=$(xcrun simctl list devices available | grep -E 'iPhone' | grep -oE '[0-9A-F-]{36}' | head -1)
+          NAME=$(xcrun simctl list devices available | grep "$UDID" | sed 's/ (.*//' | xargs)
+          echo "picked simulator: $NAME ($UDID)"
+          echo "IOS_SIM_UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
 
       - name: grant location permission
-        run: xcrun simctl privacy booted grant location-when-in-use com.limit5.mapar || echo "::warning::privacy grant skipped (best-effort until location UI tests land)"
+        run: xcrun simctl privacy "$IOS_SIM_UDID" grant location-when-in-use com.limit5.mapar || echo "::warning::privacy grant skipped (best-effort until location UI tests land)"
 
       - name: xcodebuild build and test
         run: |
@@ -87,7 +88,7 @@ jobs:
           xcodebuild \
             -project MapAR.xcodeproj \
             -scheme MapAR \
-            -destination "platform=iOS Simulator,name=$IOS_SIM_DEVICE" \
+            -destination "id=$IOS_SIM_UDID" \
             CODE_SIGN_IDENTITY= \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
