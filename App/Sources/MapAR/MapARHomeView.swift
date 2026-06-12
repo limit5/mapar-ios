@@ -22,6 +22,12 @@ struct MapARHomeView: View {
                 }
                 .accessibilityIdentifier("MapARHomeView.arOverlay")
             }
+            // Root smoke-test marker. Lives INSIDE the NavigationStack on
+            // purpose: accessibility modifiers applied outside the stack are
+            // dropped (its content is hosted in a separate UIKit hierarchy),
+            // which is why marking ContentView itself never surfaced.
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("ContentView.mapARRoot")
             .navigationTitle("Map AR")
             .task {
                 store.requestLocationUpdates()

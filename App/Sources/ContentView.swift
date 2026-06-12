@@ -4,12 +4,10 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
+        // The root smoke-test identifier lives inside MapARHomeView's
+        // NavigationStack — modifiers applied out here are dropped by the
+        // stack's separate hosting hierarchy and never reach XCUITest.
         MapARHomeView()
-            // `.contain` makes the root an accessibility container so the
-            // identifier actually surfaces in the XCUITest element tree —
-            // a bare identifier on a plain container view is dropped.
-            .accessibilityElement(children: .contain)
-            .accessibilityIdentifier("ContentView.mapARRoot")
     }
 }
 
