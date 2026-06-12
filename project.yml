@@ -1,9 +1,7 @@
-# SKILL-IOS (P7 #292) — XcodeGen spec.
+# ios-map-ar (OP-2124) - XcodeGen spec with local MapARCore package wiring.
 #
-# We ship project.yml (XcodeGen) instead of a hand-rolled .xcodeproj
-# because the .pbxproj format is fragile under merge conflicts and
-# scaffolders that emit it tend to drift. XcodeGen materialises a
-# fresh, deterministic .xcodeproj on every `xcodegen generate`.
+# Mirrors the SKILL-IOS XcodeGen layout, then adds the local SwiftPM
+# package used by the MapKit/ARKit overlay.
 
 name: MapAR
 options:
@@ -30,6 +28,10 @@ settings:
     Release:
       SWIFT_OPTIMIZATION_LEVEL: -O
 
+packages:
+  MapARCore:
+    path: Modules/MapARCore
+
 targets:
   MapAR:
     type: application
@@ -55,7 +57,9 @@ targets:
     configFiles:
       Debug: Configs/Common.xcconfig
       Release: Configs/Common.xcconfig
-    dependencies: []
+    dependencies:
+      - package: MapARCore
+        product: MapARCore
 
   MapARTests:
     type: bundle.unit-test
@@ -64,6 +68,8 @@ targets:
       - Tests
     dependencies:
       - target: MapAR
+      - package: MapARCore
+        product: MapARCore
 
   MapARUITests:
     type: bundle.ui-testing

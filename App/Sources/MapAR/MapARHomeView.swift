@@ -1,5 +1,6 @@
 // ios-map-ar (OP-1820) - integrated MapKit + ARKit app surface.
 
+import MapARCore
 import SwiftUI
 
 struct MapARHomeView: View {
@@ -27,8 +28,7 @@ struct MapARHomeView: View {
             }
             // Root smoke-test marker. Lives INSIDE the NavigationStack on
             // purpose: accessibility modifiers applied outside the stack are
-            // dropped (its content is hosted in a separate UIKit hierarchy),
-            // which is why marking ContentView itself never surfaced.
+            // dropped (its content is hosted in a separate UIKit hierarchy).
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("ContentView.mapARRoot")
             .navigationTitle("Map AR")
