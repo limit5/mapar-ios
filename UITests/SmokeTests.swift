@@ -2,6 +2,8 @@
 
 import XCTest
 
+// XCUIApplication APIs are MainActor-isolated under Swift 6.
+@MainActor
 final class SmokeTests: XCTestCase {
     override func setUp() {
         super.setUp()

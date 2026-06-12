@@ -41,6 +41,9 @@ struct ARKitOverlayView: UIViewRepresentable {
         uiView.session.pause()
     }
 
+    // RealityKit scene APIs are MainActor-isolated; UIViewRepresentable drives the
+    // coordinator on the main thread — make that explicit for Swift 6.
+    @MainActor
     final class Coordinator {
         private var renderedSelection: PointOfInterest.ID?
 
