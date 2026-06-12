@@ -1,0 +1,91 @@
+# SKILL-IOS (P7 #292) — XcodeGen spec.
+#
+# We ship project.yml (XcodeGen) instead of a hand-rolled .xcodeproj
+# because the .pbxproj format is fragile under merge conflicts and
+# scaffolders that emit it tend to drift. XcodeGen materialises a
+# fresh, deterministic .xcodeproj on every `xcodegen generate`.
+
+name: MapAR
+options:
+  bundleIdPrefix: com.limit5
+  deploymentTarget:
+    iOS: "16.0"
+  developmentLanguage: en
+  groupSortPosition: top
+  generateEmptyDirectories: true
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    SWIFT_VERSION: 5.9
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
+    SWIFT_STRICT_CONCURRENCY: complete
+  configs:
+    Debug:
+      SWIFT_OPTIMIZATION_LEVEL: -Onone
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+    Release:
+      SWIFT_OPTIMIZATION_LEVEL: -O
+
+targets:
+  MapAR:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - App/Sources
+    resources:
+      - App/Resources
+
+    info:
+      path: App/Resources/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.limit5.mapar
+        INFOPLIST_FILE: App/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: App/Resources/App.entitlements
+      configs:
+        Debug:
+          CODE_SIGN_STYLE: Automatic
+        Release:
+          CODE_SIGN_STYLE: Manual
+    configFiles:
+      Debug: Configs/Common.xcconfig
+      Release: Configs/Common.xcconfig
+    dependencies: []
+
+  MapARTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - Tests
+    dependencies:
+      - target: MapAR
+
+  MapARUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - UITests
+    dependencies:
+      - target: MapAR
+
+schemes:
+  MapAR:
+    build:
+      targets:
+        MapAR: all
+        MapARTests: [test]
+        MapARUITests: [test]
+    test:
+      targets:
+        - MapARTests
+        - MapARUITests
+
+    run:
+      config: Debug
+    archive:
+      config: Release
