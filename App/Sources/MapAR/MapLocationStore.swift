@@ -49,16 +49,25 @@ final class MapLocationStore: NSObject, ObservableObject, CLLocationManagerDeleg
         selectedPoint = point
     }
 
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        authorizationStatus = manager.authorizationStatus
-        requestLocationUpdates()
+    // CLLocationManagerDelegate callbacks arrive on a CoreLocation queue and the
+    // protocol requirements are nonisolated under Swift 6 strict concurrency —
+    // declare them nonisolated and hop back onto the MainActor for state writes.
+    nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        let status = manager.authorizationStatus
+        Task { @MainActor in
+            self.authorizationStatus = status
+            self.requestLocationUpdates()
+        }
     }
 
-    func locationManager(
+    nonisolated func locationManager(
         _ manager: CLLocationManager,
         didUpdateLocations locations: [CLLocation]
     ) {
-        userLocation = locations.last
+        let latest = locations.last
+        Task { @MainActor in
+            self.userLocation = latest
+        }
     }
 
     static let defaultPoints: [PointOfInterest] = [
