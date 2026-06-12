@@ -31,7 +31,7 @@ concurrency:
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_16.2.app/Contents/Developer
-  IOS_SIMULATOR_DESTINATION: platform=iOS Simulator,name=iPhone 15,OS=latest
+  # device picked dynamically in the job (image-proof)
 
 jobs:
   swiftpm:
@@ -69,10 +69,13 @@ jobs:
       - name: generate Xcode project
         run: xcodegen generate
 
-      - name: boot simulator
+      - name: pick + boot simulator
         run: |
           set -euo pipefail
-          xcrun simctl boot "iPhone 15" || true
+          DEVICE=$(xcrun simctl list devices available | grep -oE 'iPhone [^(]+' | head -1 | xargs)
+          echo "picked simulator: $DEVICE"
+          echo "IOS_SIM_DEVICE=$DEVICE" >> "$GITHUB_ENV"
+          xcrun simctl boot "$DEVICE" || true
           xcrun simctl bootstatus booted -b
 
       - name: grant location permission
@@ -84,7 +87,7 @@ jobs:
           xcodebuild \
             -project MapAR.xcodeproj \
             -scheme MapAR \
-            -destination "$IOS_SIMULATOR_DESTINATION" \
+            -destination "platform=iOS Simulator,name=$IOS_SIM_DEVICE" \
             CODE_SIGN_IDENTITY= \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
