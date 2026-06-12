@@ -4,6 +4,8 @@ import CoreLocation
 import XCTest
 @testable import MapAR
 
+// MapLocationStore is @MainActor; drive it from the main actor in tests.
+@MainActor
 final class MapLocationStoreTests: XCTestCase {
     func testInitialSelectionUsesFirstPoint() {
         let first = PointOfInterest(
