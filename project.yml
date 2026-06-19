@@ -42,8 +42,9 @@ targets:
     resources:
       - App/Resources
 
-    info:
-      path: App/Resources/Info.plist
+    # NOTE: do NOT add a top-level `info:` block here. xcodegen would then
+    # GENERATE App/Resources/Info.plist and clobber the curated ARKit/camera/
+    # location usage strings. The plist is supplied verbatim via INFOPLIST_FILE.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.limit5.mapar

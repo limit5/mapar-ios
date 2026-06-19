@@ -13,6 +13,11 @@ let package = Package(
         // Pinned to ios-arm64.yaml min_os_version. Bumping below 16
         // breaks the StoreKit 2 baseline P7 depends on.
         .iOS("16.0"),
+        // Host (macOS) builds this module for `swift test`. Without a macOS
+        // floor SwiftPM defaults to 10.13, where the @Observable macro
+        // (Observation, macOS 14+) and os.Logger interpolation (11+) are
+        // unavailable. Pin to 14 to cover both.
+        .macOS(.v14),
     ],
     products: [
         .library(name: "MapARFeature", targets: ["FeatureModule"]),
